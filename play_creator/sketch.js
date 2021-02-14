@@ -21,6 +21,8 @@ function preload() {
   other4 = createImg("./graphics/other4.png");
   other5 = createImg("./graphics/other5.png");
 
+  console.log(divHeight);
+
   // INITALIZING PENCIL VARIABLES
   drawn = [];
   dottedLine = false;
@@ -69,6 +71,10 @@ function setup() {
   setDivStyle(otherFeaturesDiv);
 
   /* CREATE TOP BAR BUTTONS */
+  // Info Button
+  let infoButton = createImg("./graphics/infoIcon.jpg", "Info");
+  setButtonValues(infoButton, canvasButtonsDiv, infoAlert);
+
   // Eraser Button
   let eraserButton = createImg("./graphics/eraserIcon.jpg", "Eraser");
   setButtonValues(eraserButton, canvasButtonsDiv, eraser);
@@ -206,7 +212,8 @@ function draw() {
     line(lineDim[0],lineDim[1],lineDim[2],lineDim[3])
   });
 
-  if(mouseIsPressed) {
+  if(mouseIsPressed && mouseY > divHeight) {
+    console.log(mouseY);
     let playerIndex = playerIndexReturn();
     if(playerIndex >= 0) {
       players[playerIndex].position(mouseX - 100, mouseY - 100);
@@ -253,6 +260,21 @@ function drawLine() {
 
 /* BUTTON FUNCTIONS */
 /* ================ */
+
+/* Information popup. */
+function infoAlert() {
+  let instruction = "Hello and welcome to my p5 project for Codebase! For the project, I chose to create" +
+                    "a play making program for basketball! Click and hold to draw lines and move players around." +
+                    "Here are some additional instructions to get you started...\n\n" +
+                    "(Eraser) : Removes all lines drawn on the canvas\n" +
+                    "(Pen) : Switches pen to all solid strokes\n" +
+                    "(Dotted Pen) : Switches pen to dotted strokes\n" +
+                    "(+) : Increases stroke size\n" +
+                    "(-) : Decreases stroke size\n" +
+                    "(Colors) : Switch to change pen color\n" +
+                    "(Reset) : Resets board to original postion";
+  alert(instruction);
+}
 
 /* Erases all lines drawn. */
 function eraser() {
@@ -423,7 +445,7 @@ function changeButtonPadding(butt) {
  */
 function setButtonValues(button, parent, func) {
   button.parent(parent);
-  button.mousePressed(func);
+  button.mouseClicked(func);
   button.style("cursor", "pointer");
   button.size(divHeight * 0.75, divHeight * 0.75);
   changeButtonPadding(button);

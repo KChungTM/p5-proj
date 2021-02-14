@@ -29,6 +29,7 @@ function preload() {
   dottedCounter = 0;
 
   // INITIALIZING PEN STROKE VARIABLES
+  inputColor = "#E5DB23";
   strokeColor = "black";
   strokeSize = 5;
 }
@@ -60,7 +61,7 @@ function setup() {
   titleDiv.parent(bar);
   titleDiv.style("color", "white");
   titleDiv.style("font-size", "200%");
-  titleDiv.style("font-family", "Jersey M54");
+  titleDiv.style("font-family", "Jersey M54, Helvetica, sans-serif");
   titleDiv.style("justify-content", "center");
   setDivStyle(titleDiv);
 
@@ -93,14 +94,22 @@ function setup() {
   let minusButton = createImg("./graphics/minusIcon.jpg", "Minus");
   setButtonValues(minusButton, otherFeaturesDiv, decreaseStroke);
 
-  let blackButton = createImg("./graphics/blackPallete.png", "Black");
+  let blackButton = createDiv();
+  blackButton.style("background-color", "#1A1A1A");
   setButtonValues(blackButton, otherFeaturesDiv, setBlack);
 
-  let redButton = createImg("./graphics/redPallete.png", "Red");
+  let redButton = createDiv();
+  redButton.style("background-color", "#D81E2C")
   setButtonValues(redButton, otherFeaturesDiv, setRed);
 
-  let yellowButton = createImg("./graphics/yellowPallete.png", "Yellow");
-  setButtonValues(yellowButton, otherFeaturesDiv, setYellow);
+  input = createInput("#E5DB23", "Hex Code");
+  input.size(divWidth * 0.075, divHeight * 0.65);
+  input.input(changeColor);
+  input.parent(otherFeaturesDiv);
+
+  customButton = createDiv();
+  customButton.style("background-color", inputColor);
+  setButtonValues(customButton, otherFeaturesDiv, setYellow);
 
   let resetButton = createImg("./graphics/resetIcon.jpg", "Reset");
   setButtonValues(resetButton, otherFeaturesDiv,reset);
@@ -161,35 +170,35 @@ function setup() {
   // Other 1
   other1.size(playerDimension, playerDimension);
   other1.mousePressed(other1Move);
-  other1.position(windowWidth * 0.85, windowHeight * 0.05);
+  other1.position(windowWidth * 0.85, windowHeight * 0.075);
   makeUnselectable(other1);
   players.push(other1)
 
   // Other 2
   other2.size(playerDimension, playerDimension);
   other2.mousePressed(other2Move);
-  other2.position(windowWidth * 0.85, windowHeight * 0.225);
+  other2.position(windowWidth * 0.85, windowHeight * 0.25);
   makeUnselectable(other2);
   players.push(other2)
 
   // Other 3
   other3.size(playerDimension, playerDimension);
   other3.mousePressed(other3Move);
-  other3.position(windowWidth * 0.85, windowHeight * 0.4);
+  other3.position(windowWidth * 0.85, windowHeight * 0.425);
   makeUnselectable(other3);
   players.push(other3)
 
   // Other 4
   other4.size(playerDimension, playerDimension);
   other4.mousePressed(other4Move);
-  other4.position(windowWidth * 0.85, windowHeight * 0.575);
+  other4.position(windowWidth * 0.85, windowHeight * 0.6);
   makeUnselectable(other4);
   players.push(other4)
 
   // Other 5
   other5.size(playerDimension, playerDimension);
   other5.mousePressed(other5Move);
-  other5.position(windowWidth * 0.85, windowHeight * 0.75);
+  other5.position(windowWidth * 0.85, windowHeight * 0.775);
   makeUnselectable(other5);
   players.push(other5)
 }
@@ -272,6 +281,7 @@ function infoAlert() {
                     "(+) : Increases stroke size\n" +
                     "(-) : Decreases stroke size\n" +
                     "(Colors) : Switch to change pen color\n" +
+                    "(Input) : Add a custom color with HEX value\n" +
                     "(Reset) : Resets board to original postion";
   alert(instruction);
 }
@@ -320,7 +330,15 @@ function setRed() {
 
 /* Sets stroke color to yellow. */
 function setYellow() {
-  strokeColor = color(229, 219, 35);
+  strokeColor = color(inputColor);
+}
+
+function changeColor() {
+  if (this.value()[0] == "#" && this.value().length == 7) {
+    inputColor = this.value();
+    customButton.style("background-color", inputColor);
+    console.log("Changed Custom Color!");
+  }
 }
 
 /**

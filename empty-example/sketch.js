@@ -1,16 +1,43 @@
+/* LOADS IMAGES AND VARIABLES */
+/* ========================== */
+function preload() {
+  // LOADING COURT IMAGE
+  img = loadImage("./CodebaseCourt.jpg");
+  
+  // TOP DIV BAR DIMENSIONS
+  divHeight = windowHeight * 0.046;
+  divWidth = windowWidth;  
+  
+  // CREATING PLAYER GRAPHICS
+  player1 = createImg("./graphics/player1.png");
+  player2 = createImg("./graphics/player2.png");
+  player3 = createImg("./graphics/player3.png");
+  player4 = createImg("./graphics/player4.png");
+  player5 = createImg("./graphics/player5.png");
 
+  other1 = createImg("./graphics/other1.png");
+  other2 = createImg("./graphics/other2.png");
+  other3 = createImg("./graphics/other3.png");
+  other4 = createImg("./graphics/other4.png");
+  other5 = createImg("./graphics/other5.png");
+
+  // INITALIZING PENCIL VARIABLES
+  drawn = [];
+  dottedLine = false;
+  dottedCounter = 0;
+
+  // INITIALIZING PEN STROKE VARIABLES
+  strokeColor = "black";
+  strokeSize = 5;
+}
+
+/* SETS UP CANVAS AND SCREEN */
+/* ========================= */
 function setup() {
-  // Initalize Variables (NE)
-  let divHeight = windowHeight * 0.046;
-  let divWidth = windowWidth;
-  // GLOBAL img VARIABLE
-  img = loadImage("./CodebaseCourt.jpg")
-
   /* CREATE TOP BAR */
   /* ============== */
 
   /* CREATE DIVS */
-
   // CREATE OUTER DIV
   let bar = createDiv().size(divWidth, divHeight);
   let col = color(53,110,226,255);
@@ -21,10 +48,10 @@ function setup() {
   bar.position(0, 0)
   
   // CREATE THREE EQUAL DIVS
-  let canvasButtons = createDiv();
-  canvasButtons.parent(bar);
-  canvasButtons.style("justify-content", "start");
-  setDivStyle(canvasButtons);
+  let canvasButtonsDiv = createDiv();
+  canvasButtonsDiv.parent(bar);
+  canvasButtonsDiv.style("justify-content", "start");
+  setDivStyle(canvasButtonsDiv);
 
   let titleDiv = createDiv();
   titleDiv.html("Play Creator");
@@ -35,41 +62,47 @@ function setup() {
   titleDiv.style("justify-content", "center");
   setDivStyle(titleDiv);
 
-  let otherFunctions = createDiv();
-  otherFunctions.parent(bar);
-  setDivStyle(otherFunctions);
+  let otherFeaturesDiv = createDiv();
+  otherFeaturesDiv.style("display", "flex");
+  otherFeaturesDiv.style("justify-content", "flex-end");
+  otherFeaturesDiv.parent(bar);
+  setDivStyle(otherFeaturesDiv);
 
   /* CREATE TOP BAR BUTTONS */
-
   // Eraser Button
-  let eraserButton = createImg("./graphics/eraserIcon.jpg");
-  eraserButton.parent(canvasButtons);
-  eraserButton.mousePressed(eraser);
-  eraserButton.style("cursor", "pointer");
-  eraserButton.size(divHeight * 0.75, divHeight * 0.75);
-  changeButtonPadding(eraserButton);
+  let eraserButton = createImg("./graphics/eraserIcon.jpg", "Eraser");
+  setButtonValues(eraserButton, canvasButtonsDiv, eraser);
 
   // Pen Button
-  let penButton = createImg("./graphics/penIcon.jpg");
-  penButton.parent(canvasButtons);
-  penButton.mousePressed(pencil);
-  penButton.style("cursor", "pointer");
-  penButton.size(divHeight * 0.75, divHeight * 0.75);
-  changeButtonPadding(penButton);
+  let penButton = createImg("./graphics/penIcon.jpg", "Pencil");
+  setButtonValues(penButton, canvasButtonsDiv, pencil);
 
   // Dotted Pen Button
-  let dottedButton = createImg("./graphics/dottedPenIcon.jpg");
-  dottedButton.parent(canvasButtons);
-  dottedButton.mousePressed(dotted);
-  dottedButton.style("cursor", "pointer");
-  dottedButton.size(divHeight * 0.75, divHeight * 0.75);
-  changeButtonPadding(dottedButton);
-    
-  // CREATE COURT CANVAS
+  let dottedButton = createImg("./graphics/dottedPenIcon.jpg", "Dotted");
+  setButtonValues(dottedButton, canvasButtonsDiv, dotted);
+
+  let plusButton = createImg("./graphics/plusIcon.jpg", "Plus");
+  setButtonValues(plusButton, otherFeaturesDiv, increaseStroke);
+
+  let minusButton = createImg("./graphics/minusIcon.jpg", "Minus");
+  setButtonValues(minusButton, otherFeaturesDiv, decreaseStroke);
+
+  let blackButton = createImg("./graphics/blackPallete.png", "Black");
+  setButtonValues(blackButton, otherFeaturesDiv, setBlack);
+
+  let redButton = createImg("./graphics/redPallete.png", "Red");
+  setButtonValues(redButton, otherFeaturesDiv, setRed);
+
+  let yellowButton = createImg("./graphics/yellowPallete.png", "Yellow");
+  setButtonValues(yellowButton, otherFeaturesDiv, setYellow);
+
+  let resetButton = createImg("./graphics/resetIcon.jpg", "Reset");
+  setButtonValues(resetButton, otherFeaturesDiv,reset);
+
+  /* CREATE COURT CANVAS */
   canvas = createCanvas(windowWidth, windowHeight);
   canvas.position(0, 0);
   canvas.style("position", "fixed");
-  console.log(windowWidth);
 
   /* CREATE PLAYER BUTTONS */
   /* ===================== */
@@ -83,162 +116,218 @@ function setup() {
   playerDimension = windowWidth * 0.1;
 
   /* PLAYER BUTTONS */
-
   // Player 1
-  let player1 = createImg("./graphics/player1.png");
   player1.size(playerDimension, playerDimension);
   player1.mousePressed(player1Move);
-  player1x = windowWidth * 0.05;
-  player1y = windowHeight * 0.05;
-  player1.position(player1x, player1y);
+  player1.position(windowWidth * 0.05, windowHeight * 0.05);
+  makeUnselectable(player1);
+  console.log("fdfdsfdsaf")
   players.push(player1)
 
   // Player 2
-  let player2 = createImg("./graphics/player2.png");
   player2.size(playerDimension, playerDimension);
   player2.mousePressed(player2Move);
-  player2x = windowWidth * 0.05;
-  player2y = windowHeight * 0.225;
-  player2.position(player2x, player2y);
+  player2.position(windowWidth * 0.05, windowHeight * 0.225);
+  makeUnselectable(player2);
   players.push(player2)
 
   // Player 3
-  let player3 = createImg("./graphics/player3.png");
   player3.size(playerDimension, playerDimension);
   player3.mousePressed(player3Move);
-  player3x = windowWidth * 0.05;
-  player3y = windowHeight * 0.4;
-  player3.position(player3x, player3y);
+  player3.position(windowWidth * 0.05, windowHeight * 0.4);
+  makeUnselectable(player3);
   players.push(player3)
 
   // Player 4
-  let player4 = createImg("./graphics/player4.png");
   player4.size(playerDimension, playerDimension);
   player4.mousePressed(player4Move);
-  player4x = windowWidth * 0.05;
-  player4y = windowHeight * 0.575;
-  player4.position(player4x, player4y);
+  player4.position(windowWidth * 0.05, windowHeight * 0.575);
+  makeUnselectable(player4);
   players.push(player4)
   
   // Player 5
-  let player5 = createImg("./graphics/player5.png");
   player5.size(playerDimension, playerDimension);
   player5.mousePressed(player5Move);
-  player5x = windowWidth * 0.05;
-  player5y = windowHeight * 0.75;
-  player5.position(player5x, player5y);
+  player5.position(windowWidth * 0.05, windowHeight * 0.75);
+  makeUnselectable(player5);
   players.push(player5)
 
-  /* OTHER BUTTONS */
-
   // Other 1
-  let other1 = createImg("./graphics/other1.png");
   other1.size(playerDimension, playerDimension);
   other1.mousePressed(other1Move);
-  other1x = windowWidth * 0.85;
-  other1y = windowHeight * 0.05;
-  other1.position(other1x, other1y);
+  other1.position(windowWidth * 0.85, windowHeight * 0.05);
+  makeUnselectable(other1);
   players.push(other1)
 
   // Other 2
-  let other2 = createImg("./graphics/other2.png");
   other2.size(playerDimension, playerDimension);
   other2.mousePressed(other2Move);
-  other2x = windowWidth * 0.85;
-  other2y = windowHeight * 0.225;
-  other2.position(other2x, other2y);
+  other2.position(windowWidth * 0.85, windowHeight * 0.225);
+  makeUnselectable(other2);
   players.push(other2)
 
   // Other 3
-  let other3 = createImg("./graphics/other3.png");
   other3.size(playerDimension, playerDimension);
   other3.mousePressed(other3Move);
-  other3x = windowWidth * 0.85;
-  other3y = windowHeight * 0.4;
-  other3.position(other3x, other3y);
+  other3.position(windowWidth * 0.85, windowHeight * 0.4);
+  makeUnselectable(other3);
   players.push(other3)
 
   // Other 4
-  let other4 = createImg("./graphics/other4.png");
   other4.size(playerDimension, playerDimension);
   other4.mousePressed(other4Move);
-  other4x = windowWidth * 0.85;
-  other4y = windowHeight * 0.575;
-  other4.position(other4x, other4y);
+  other4.position(windowWidth * 0.85, windowHeight * 0.575);
+  makeUnselectable(other4);
   players.push(other4)
 
   // Other 5
-  let other5 = createImg("./graphics/other5.png");
   other5.size(playerDimension, playerDimension);
   other5.mousePressed(other5Move);
-  other5x = windowWidth * 0.85;
-  other5y = windowHeight * 0.75;
-  other5.position(other5x, other5y);
+  other5.position(windowWidth * 0.85, windowHeight * 0.75);
+  makeUnselectable(other5);
   players.push(other5)
-
-  
-
-
-  console.log(windowHeight * 0.075);
-  console.log("joe")
-
-  
 }
 
+/* P.5 FUNCTIONS */
+/* ============= */
+
+/**
+ * Draws and refresh the canvas.
+ * Also detects mouse input for strokes.
+ */
 function draw() {
   // IMAGE 
   image(img, 0, 0);
   img.resize(windowWidth, windowHeight);
 
+  drawn.forEach((lineDim) => {
+    stroke(lineDim[4]);
+    strokeWeight(lineDim[5]);
+    line(lineDim[0],lineDim[1],lineDim[2],lineDim[3])
+  });
+
   if(mouseIsPressed) {
     let playerIndex = playerIndexReturn();
     if(playerIndex >= 0) {
       players[playerIndex].position(mouseX - 100, mouseY - 100);
+    } else if (dottedLine) {
+      if (dottedCounter % 3 == 0) { 
+        drawLine();
+      }
+      dottedCounter += 1;
     } else {
-      ellipse(mouseX, mouseY, 2, 2);
+      drawLine();
     }
   }
+  
 }
 
+/**
+ * Resets player click variables once
+ * users are down clicking and dragging.
+ */
 function mouseReleased(){
   for(let i = 0; i < playerClicked.length; i++) {
     playerClicked[i] = false;
   }
-  cursor("default");
   console.log("All Players Set To False!");
 }
 
-function changeButtonPadding(butt) {
-  butt.style("margin-left", windowWidth * 0.005 + "px");
-  butt.style("margin-right", windowWidth * 0.005 + "px");
+/**
+ * Draws a line from previous mouse location
+ * to the current mouse location.
+ */
+function drawLine() {
+  stroke(strokeColor);
+  strokeWeight(strokeSize);  
+  let lineDim = [];
+  lineDim.push(mouseX);
+  lineDim.push(mouseY);
+  lineDim.push(pmouseX);
+  lineDim.push(pmouseY);
+  lineDim.push(strokeColor);
+  lineDim.push(strokeSize);
+  drawn.push(lineDim);
+  line(mouseX, mouseY, pmouseX, pmouseY);
 }
 
+/* BUTTON FUNCTIONS */
+/* ================ */
+
+/* Erases all lines drawn. */
 function eraser() {
   console.log("Eraser Button Pressed!");
+  drawn = [];
 }
 
+/* Sets pen to solid lines. */
 function pencil() {
   console.log("Pencil Button Pressed!");
+  dottedLine = false;
 }
 
+/* Sets pen to dotted lines. */
 function dotted() {
   console.log("Dotted Pencil Button Pressed!");
+  dottedLine = true;
 }
 
-function setDivStyle(div) {
-  div.style("display", "flex");
-  
-  div.style("align-items", "center");
-  div.style("width", "33.33%");
+/* Increases stroke size. */
+function increaseStroke() {
+  if(strokeSize < 10) {
+    strokeSize += 1;
+  }
 }
 
-function windowResized() {
-  img = loadImage("./CodebaseCourt.jpg");
-  image(img, 0, 0);
-  img.resize(windowWidth, windowHeight);
-  console.log("Resized Window!");
+/* Decreases stroke size. */
+function decreaseStroke() {
+  if(strokeSize > 0) {
+    strokeSize -= 1;
+  } 
 }
 
+/* Sets stroke color to black. */
+function setBlack() {
+  strokeColor = color(26, 26, 26);
+}
+
+/* Sets stroke color to red. */
+function setRed() {
+  strokeColor = color(216, 30, 44);
+}
+
+/* Sets stroke color to yellow. */
+function setYellow() {
+  strokeColor = color(229, 219, 35);
+}
+
+/**
+ * Resets all canvas components to
+ * their original position. 
+ */
+function reset() {
+  player1.position(windowWidth * 0.05, windowHeight * 0.05);
+  player2.position(windowWidth * 0.05, windowHeight * 0.225);
+  player3.position(windowWidth * 0.05, windowHeight * 0.4);
+  player4.position(windowWidth * 0.05, windowHeight * 0.575);
+  player5.position(windowWidth * 0.05, windowHeight * 0.75);
+  other1.position(windowWidth * 0.85, windowHeight * 0.05);
+  other2.position(windowWidth * 0.85, windowHeight * 0.225);
+  other3.position(windowWidth * 0.85, windowHeight * 0.4);
+  other4.position(windowWidth * 0.85, windowHeight * 0.575);
+  other5.position(windowWidth * 0.85, windowHeight * 0.75);
+
+  drawn = [];
+  strokeSize = 5;
+  setBlack();
+
+  console.log("Reset all components...");
+}
+
+/**
+ * Sets corresponding players index to true
+ * within the playerClicked array.
+ */
 function player1Move() {
   console.log("Clicked Player1...")
   playerClicked[0] = true;
@@ -289,6 +378,73 @@ function other5Move() {
   playerClicked[9] = true;
 }
 
+
+
+/* STYLE FUNCTIONS */
+/* =============== */
+
+/**
+ * Sets the top divs' CSS styles.
+ * @param {*} div = Div to style.
+ */
+function setDivStyle(div) {
+  div.style("display", "flex");
+  div.style("align-items", "center");
+  div.style("width", "33.33%");
+}
+
+/**
+ * Makes the players undraggable w/o JS.
+ * @param {*} player = Player button.
+ */
+function makeUnselectable(player) {
+  player.style("user-drag", "none");
+  player.style("user-select", "none");
+  player.style("-moz-user-select", "none");
+  player.style("-webkit-user-drag", "none");
+  player.style("-webkit-user-select", "none");
+  player.style("-ms-user-select", "none");
+}
+
+/**
+ * Sets the padding for top row buttons.
+ * @param {*} butt = Button to set padding for.
+ */
+function changeButtonPadding(butt) {
+  butt.style("margin-left", windowWidth * 0.005 + "px");
+  butt.style("margin-right", windowWidth * 0.005 + "px");
+}
+
+/**
+ * Assigns button to parent and sets function.
+ * @param {*} button = Button to add to parent.
+ * @param {*} parent = HTML parent element.
+ * @param {*} func = Function to assign to button press.
+ */
+function setButtonValues(button, parent, func) {
+  button.parent(parent);
+  button.mousePressed(func);
+  button.style("cursor", "pointer");
+  button.size(divHeight * 0.75, divHeight * 0.75);
+  changeButtonPadding(button);
+}
+
+/* MISC. FUNCTIONS */
+/* =============== */
+
+/**
+ * Resizes the image when window is resized.
+ */
+function windowResized() {
+  img = loadImage("./CodebaseCourt.jpg");
+  image(img, 0, 0);
+  img.resize(windowWidth, windowHeight);
+  console.log("Resized Window!");
+}
+
+/**
+ * Returns player index of player clicked.
+ */
 function playerIndexReturn() {
   let playerIndex;
   for(let i = 0; i < playerClicked.length; i++) {
@@ -302,4 +458,3 @@ function playerIndexReturn() {
     return -1;
   }
 }
-

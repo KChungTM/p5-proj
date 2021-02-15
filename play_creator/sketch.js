@@ -89,10 +89,10 @@ function setup() {
   setButtonValues(dottedButton, canvasButtonsDiv, dotted);
 
   let plusButton = createImg("./graphics/plusIcon.jpg", "Plus");
-  setButtonValues(plusButton, otherFeaturesDiv, increaseStroke);
+  setButtonValues(plusButton, canvasButtonsDiv, increaseStroke);
 
   let minusButton = createImg("./graphics/minusIcon.jpg", "Minus");
-  setButtonValues(minusButton, otherFeaturesDiv, decreaseStroke);
+  setButtonValues(minusButton, canvasButtonsDiv, decreaseStroke);
 
   let blackButton = createDiv();
   blackButton.style("background-color", "#1A1A1A");
@@ -103,7 +103,7 @@ function setup() {
   setButtonValues(redButton, otherFeaturesDiv, setRed);
 
   input = createInput("#E5DB23", "Hex Code");
-  input.size(divWidth * 0.075, divHeight * 0.65);
+  input.size(divWidth * 0.05, divHeight * 0.65);
   input.input(changeColor);
   input.parent(otherFeaturesDiv);
 
@@ -113,6 +113,13 @@ function setup() {
 
   let resetButton = createImg("./graphics/resetIcon.jpg", "Reset");
   setButtonValues(resetButton, otherFeaturesDiv,reset);
+
+  playName = createInput("Play Name", "Play Name");
+  playName.size(divWidth * 0.05, divHeight * 0.65);
+  playName.parent(otherFeaturesDiv);
+
+  let saveButton = createImg("./graphics/saveIcon.jpg", "Save");
+  setButtonValues(saveButton, otherFeaturesDiv, savePlay);
 
   /* CREATE COURT CANVAS */
   canvas = createCanvas(windowWidth, windowHeight);
@@ -222,7 +229,6 @@ function draw() {
   });
 
   if(mouseIsPressed && mouseY > divHeight) {
-    console.log(mouseY);
     let playerIndex = playerIndexReturn();
     if(playerIndex >= 0) {
       players[playerIndex].position(mouseX - 100, mouseY - 100);
@@ -281,8 +287,10 @@ function infoAlert() {
                     "(+) : Increases stroke size\n" +
                     "(-) : Decreases stroke size\n" +
                     "(Colors) : Switch to change pen color\n" +
-                    "(Input) : Add a custom color with HEX value\n" +
-                    "(Reset) : Resets board to original postion";
+                    "(Color Input) : Add a custom color with HEX value\n" +
+                    "(Reset) : Resets board to original postion\n" +
+                    "(Play Name Input) : Name your play to change save name\n" +
+                    "(Save) : Saves current current as a JPEG";
   alert(instruction);
 }
 
@@ -313,7 +321,7 @@ function increaseStroke() {
 
 /* Decreases stroke size. */
 function decreaseStroke() {
-  if(strokeSize > 0) {
+  if(strokeSize > 1) {
     strokeSize -= 1;
   } 
 }
@@ -351,17 +359,31 @@ function reset() {
   player3.position(windowWidth * 0.05, windowHeight * 0.4);
   player4.position(windowWidth * 0.05, windowHeight * 0.575);
   player5.position(windowWidth * 0.05, windowHeight * 0.75);
-  other1.position(windowWidth * 0.85, windowHeight * 0.05);
-  other2.position(windowWidth * 0.85, windowHeight * 0.225);
-  other3.position(windowWidth * 0.85, windowHeight * 0.4);
-  other4.position(windowWidth * 0.85, windowHeight * 0.575);
-  other5.position(windowWidth * 0.85, windowHeight * 0.75);
+  other1.position(windowWidth * 0.85, windowHeight * 0.075);
+  other2.position(windowWidth * 0.85, windowHeight * 0.25);
+  other3.position(windowWidth * 0.85, windowHeight * 0.425);
+  other4.position(windowWidth * 0.85, windowHeight * 0.6);
+  other5.position(windowWidth * 0.85, windowHeight * 0.775);
 
   drawn = [];
   strokeSize = 5;
   setBlack();
 
   console.log("Reset all components...");
+}
+
+function savePlay() {
+  let content = document.body;
+  let dataURI;
+  html2canvas(content).then((canvas) => {
+    dataURI = canvas.toDataURL("image/jpeg", 0.9);
+    let a = document.createElement("a");
+    document.body.appendChild(a);
+    a.href = dataURI;
+    a.download = playName.value() + ".jpeg";
+    a.click();
+    document.body.removeChild(a);
+  });
 }
 
 /**

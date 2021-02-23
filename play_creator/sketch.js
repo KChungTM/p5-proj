@@ -94,6 +94,15 @@ function setup() {
   let minusButton = createImg("./graphics/minusIcon.jpg", "Minus");
   setButtonValues(minusButton, canvasButtonsDiv, decreaseStroke);
 
+  strokeNum = createDiv();
+  strokeNum.html(strokeSize);
+  strokeNum.parent(canvasButtonsDiv);
+  strokeNum.style("color", "white");
+  strokeNum.style("font-size", "200%");
+  strokeNum.style("font-family", "Jersey M54, Helvetica, sans-serif");
+  changeButtonPadding(strokeNum);
+
+
   let blackButton = createDiv();
   blackButton.style("background-color", "#1A1A1A");
   setButtonValues(blackButton, otherFeaturesDiv, setBlack);
@@ -317,6 +326,7 @@ function increaseStroke() {
   if(strokeSize < 10) {
     strokeSize += 1;
   }
+  strokeNum.html(strokeSize);
 }
 
 /* Decreases stroke size. */
@@ -324,6 +334,7 @@ function decreaseStroke() {
   if(strokeSize > 1) {
     strokeSize -= 1;
   } 
+  strokeNum.html(strokeSize);
 }
 
 /* Sets stroke color to black. */
